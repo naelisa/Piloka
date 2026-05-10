@@ -1,0 +1,397 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: white;
+  border-radius: 32px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+h1,
+h2 {
+  text-align: center;
+  color: #1b5e20;
+}
+
+h2 {
+  font-size: 1.1rem;
+  color: #555;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.form-box,
+.comparison-box {
+  margin: 30px 0;
+  padding: 20px;
+  background: #f1f8e9;
+  border-radius: 24px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #2e3b2c;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 16px;
+  border: 1px solid #a5d6a7;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus,
+select:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+}
+
+button,
+.small-btn {
+  margin-top: 10px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover,
+.small-btn:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+}
+button:active,
+.small-btn:active {
+  transform: translateY(0);
+}
+
+.btn-banding {
+  display: block;
+  margin-top: 16px;
+  background: #ff9800;
+  color: white;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 40px;
+  text-align: center;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.btn-banding:hover {
+  background: #e65100;
+  transform: translateY(-1px);
+}
+
+.comparison-box {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  flex: 1;
+  min-width: 220px;
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-top: 8px solid #2e7d32;
+  line-height: 1.8;
+}
+
+.chart-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+canvas {
+  max-width: 380px;
+  max-height: 300px;
+  background: #fafafa;
+  border-radius: 24px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.info-panel {
+  margin-top: 20px;
+  background: #c8e6c9;
+  padding: 15px;
+  border-radius: 20px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.route-selects {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.route-selects > div {
+  flex: 1;
+  min-width: 160px;
+}
+
+.warning-text {
+  color: #c62828;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: none;
+}
+
+.berat-table-wrap {
+  margin-top: 10px;
+  border-radius: 16px;
+  overflow-x: auto;
+  border: 1px solid #a5d6a7;
+}
+.berat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.berat-table th {
+  background: #2e7d32;
+  color: white;
+  padding: 10px 14px;
+  text-align: center;
+}
+.berat-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #c8e6c9;
+  text-align: center;
+}
+.berat-table tr:nth-child(even) td {
+  background: #f9fbe7;
+}
+.berat-table td:first-child {
+  text-align: left;
+  padding-left: 14px;
+}
+.total-row td {
+  background: #e8f5e9 !important;
+  font-weight: bold;
+  color: #1b5e20;
+}
+.info-status {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.algo-section {
+  margin: 40px 0;
+  padding: 28px;
+  background: #f1f8e9;
+  border-radius: 24px;
+}
+.algo-section h2 {
+  color: #1b5e20;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+  text-align: left;
+}
+.algo-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.algo-card {
+  flex: 1;
+  min-width: 240px;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-top: 6px solid #2e7d32;
+}
+.algo-card.dp {
+  border-top-color: #ff9800;
+}
+.algo-card h3 {
+  color: #1b5e20;
+  margin-bottom: 10px;
+}
+.algo-card.dp h3 {
+  color: #e65100;
+}
+
+/* ── PILOKA Site Header Row ── */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.site-header-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-header-titles h1,
+.site-header-titles h2 {
+  text-align: left;
+}
+
+/* ── PILOKA Brand Badge ── */
+.piloka-badge {
+  flex-shrink: 0;
+  text-decoration: none;
+  cursor: default;
+  user-select: none;
+}
+
+.piloka-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%);
+  border-radius: 14px;
+  padding: 10px 16px 10px 12px;
+  box-shadow:
+    0 4px 16px rgba(46, 125, 50, 0.35),
+    0 1px 4px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.piloka-logo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.piloka-logo:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 8px 24px rgba(46, 125, 50, 0.45),
+    0 2px 6px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.piloka-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  animation: piloka-spin 6s linear infinite;
+}
+
+@keyframes piloka-spin {
+  0%   { transform: rotate(0deg) scale(1); }
+  45%  { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(20deg) scale(1.12); }
+  55%  { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.piloka-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.piloka-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.piloka-name span {
+  color: #a5d6a7;
+}
+
+.piloka-tagline {
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.72);
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.piloka-dot {
+  width: 6px;
+  height: 6px;
+  background: #69f0ae;
+  border-radius: 50%;
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  box-shadow: 0 0 6px #69f0ae;
+  animation: piloka-pulse 2s ease-in-out infinite;
+}
+
+@keyframes piloka-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.6); }
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .site-header-titles h1,
+  .site-header-titles h2 {
+    text-align: center;
+  }
+  .piloka-badge {
+    align-self: center;
+  }
+  .piloka-name {
+    font-size: 0.9rem;
+  }
+  .piloka-tagline {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 18px;
+    border-radius: 20px;
+  }
+  h1 {
+    font-size: 1.3rem;
+  }
+}

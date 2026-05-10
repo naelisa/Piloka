@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bandingkan Rute - Greedy vs DP + Peta</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .map-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 30px 0;
+      }
+      .map-card {
+        flex: 1;
+        min-width: 280px;
+        background: #f5f5f5;
+        border-radius: 20px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .map-card h3 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #1b5e20;
+      }
+      .map-card.dp h3 {
+        color: #e65100;
+      }
+      .map {
+        height: 370px;
+        border-radius: 16px;
+        z-index: 1;
+      }
+      @media (max-width: 800px) {
+        .map-container {
+          flex-direction: column;
+        }
+      }
+
+      .step-section {
+        margin: 30px 0;
+        padding: 24px;
+        background: #f1f8e9;
+        border-radius: 24px;
+      }
+      .step-section h2 {
+        color: #1b5e20;
+        margin-bottom: 18px;
+      }
+      .step-panels {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .step-panel {
+        flex: 1;
+        min-width: 240px;
+        background: white;
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .step-panel h4 {
+        margin-bottom: 12px;
+        color: #1b5e20;
+      }
+      .step-panel.dp h4 {
+        color: #e65100;
+      }
+      .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        margin-bottom: 6px;
+        background: #f9fbe7;
+        font-size: 0.86rem;
+        color: #333;
+      }
+      .step-num {
+        background: #2e7d32;
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .step-panel.dp .step-num {
+        background: #ff9800;
+      }
+      .step-dist {
+        color: #888;
+        font-size: 0.82rem;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+
+      .matrix-section {
+        margin: 30px 0;
+        padding: 24px;
+        background: #f1f8e9;
+        border-radius: 24px;
+        overflow-x: auto;
+      }
+      .matrix-section h2 {
+        color: #1b5e20;
+      }
+      .dist-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        min-width: 420px;
+      }
+      .dist-table th {
+        background: #2e7d32;
+        color: white;
+        padding: 9px 12px;
+        text-align: center;
+      }
+      .dist-table td {
+        padding: 8px 12px;
+        text-align: center;
+        border-bottom: 1px solid #c8e6c9;
+      }
+      .dist-table tr:nth-child(even) td {
+        background: #f9fbe7;
+      }
+      .dist-table td.diag {
+        background: #e8f5e9;
+        color: #aaa;
+      }
+
+      .summary-stats {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 16px 0;
+      }
+      .stat-box {
+        flex: 1;
+        min-width: 100px;
+        background: white;
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-bottom: 4px solid #2e7d32;
+      }
+      .stat-box.dp {
+        border-bottom-color: #ff9800;
+      }
+      .stat-box .stat-val {
+        font-size: 1.7rem;
+        font-weight: bold;
+        color: #1b5e20;
+      }
+      .stat-box.dp .stat-val {
+        color: #e65100;
+      }
+      .stat-box .stat-label {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 4px;
+      }
+
+      .kesimpulan-box {
+        margin: 24px 0;
+        padding: 18px 24px;
+        background: #e8f5e9;
+        border-left: 5px solid #2e7d32;
+        border-radius: 0 16px 16px 0;
+        font-size: 1rem;
+        color: #1b5e20;
+        font-weight: 500;
+      }
+
+      .berat-section {
+        margin: 30px 0;
+        padding: 24px;
+        background: #f1f8e9;
+        border-radius: 24px;
+      }
+      .berat-section h2 {
+        color: #1b5e20;
+        margin-bottom: 8px;
+      }
+      .berat-panels {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .berat-panel {
+        flex: 1;
+        min-width: 280px;
+        background: white;
+        border-radius: 18px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow-x: auto;
+      }
+      .berat-panel h4 {
+        margin-bottom: 12px;
+        color: #1b5e20;
+      }
+      .berat-panel.dp h4 {
+        color: #e65100;
+      }
+
+      .section-note {
+        font-size: 0.87rem;
+        color: #555;
+        line-height: 1.7;
+        margin-top: 8px;
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .tag.green {
+        background: #c8e6c9;
+        color: #1b5e20;
+      }
+      .tag.orange {
+        background: #ffe0b2;
+        color: #e65100;
+      }
+      .chart-box {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin: 30px 0;
+      }
+      canvas {
+        max-width: 380px;
+        max-height: 300px;
+        background: #fafafa;
+        border-radius: 24px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Site Header Row -->
+      <div class="site-header">
+        <div class="site-header-titles">
+          <h1>🗺️ Perbandingan Algoritma dengan Peta</h1>
+          <h2>Greedy vs Dynamic Programming — Tasikmalaya</h2>
+        </div>
+        <div class="piloka-badge">
+          <div class="piloka-logo">
+            <div class="piloka-dot"></div>
+            <span class="piloka-icon">♻️</span>
+            <div class="piloka-text">
+              <span class="piloka-name">PIL<span>O</span>KA</span>
+              <span class="piloka-tagline">Pilah &amp; Optimasi Logistik Kebersihan Area</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO RUTE -->
+      <div
+        id="infoRute"
+        style="
+          text-align: center;
+          margin: 16px 0 4px;
+          padding: 12px 20px;
+          background: #f1f8e9;
+          border-radius: 16px;
+          font-size: 0.95rem;
+          color: #444;
+        "
+      ></div>
+
+      <!-- SUMMARY STATS -->
+      <!-- SUMMARY STATS -->
+      <div class="summary-stats">
+        <div class="stat-box">
+          <div class="stat-val" id="statJarakGreedy">—</div>
+          <div class="stat-label">⚡ Jarak Greedy (km)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statWaktuGreedy">—</div>
+          <div class="stat-label">⚡ Waktu Tempuh Greedy (mnt)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statAngkutGreedy">—</div>
+          <div class="stat-label">⚡ Est. Angkut Greedy (mnt)</div>
+        </div>
+        <div
+          class="stat-box"
+          style="background: #e8f5e9; border-bottom-color: #2e7d32"
+        >
+          <div
+            class="stat-val"
+            id="statTotalWaktuGreedy"
+            style="color: #1b5e20; font-size: 2rem"
+          >
+            —
+          </div>
+          <div class="stat-label">⭐ TOTAL WAKTU Greedy (mnt)</div>
+        </div>
+        <div class="stat-box dp">
+          <div class="stat-val" id="statJarakDP">—</div>
+          <div class="stat-label">🧠 Jarak DP (km)</div>
+        </div>
+        <div class="stat-box dp">
+          <div class="stat-val" id="statWaktuDP">—</div>
+          <div class="stat-label">🧠 Waktu Tempuh DP (mnt)</div>
+        </div>
+        <div class="stat-box dp">
+          <div class="stat-val" id="statAngkutDP">—</div>
+          <div class="stat-label">🧠 Est. Angkut DP (mnt)</div>
+        </div>
+        <div
+          class="stat-box dp"
+          style="background: #fff3e0; border-bottom-color: #ff9800"
+        >
+          <div
+            class="stat-val"
+            id="statTotalWaktuDP"
+            style="color: #e65100; font-size: 2rem"
+          >
+            —
+          </div>
+          <div class="stat-label">⭐ TOTAL WAKTU DP (mnt)</div>
+        </div>
+      </div>
+
+      <!-- KARTU RUTE -->
+      <div class="comparison-box">
+        <div class="card">
+          <h3>✅ Algoritma Greedy</h3>
+          <p id="ruteGreedy" style="color: #333; margin-bottom: 8px">-</p>
+          <p>📏 Jarak: <strong id="jarakGreedy">0</strong> km</p>
+          <p>🚗 Waktu tempuh: <strong id="waktuGreedy">0</strong> menit</p>
+          <p>
+            ⏱️ Est. pengangkutan: <strong id="angkutGreedy">0</strong> menit
+          </p>
+          <p>
+            🚦 Strategi: <span class="tag green">Pilih terdekat saat ini</span>
+          </p>
+        </div>
+        <div class="card" style="border-top-color: #ff9800">
+          <h3>🧠 Dynamic Programming</h3>
+          <p id="ruteDP" style="color: #333; margin-bottom: 8px">-</p>
+          <p>📏 Jarak: <strong id="jarakDP">0</strong> km</p>
+          <p>🚗 Waktu tempuh: <strong id="waktuDP">0</strong> menit</p>
+          <p>⏱️ Est. pengangkutan: <strong id="angkutDP">0</strong> menit</p>
+          <p>
+            🚦 Strategi:
+            <span class="tag orange">Cek semua kombinasi (≤12 titik)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- KESIMPULAN -->
+      <div class="kesimpulan-box" id="kesimpulan"></div>
+
+      <!-- TABEL BERAT SAMPAH PER URUTAN -->
+      <div class="berat-section">
+        <h2>⚖️ Berat Sampah & Estimasi Waktu Pengangkutan per Kelurahan</h2>
+        <p class="section-note">
+          Tabel ini menunjukkan berat sampah yang dijemput di tiap kelurahan
+          sesuai urutan rute masing-masing algoritma, beserta akumulasi berat
+          yang dibawa truk dan estimasi waktu pengangkutan (1 kg = 1 menit).
+        </p>
+        <div style="margin-bottom: 24px">
+          <h4 style="color: #1b5e20; margin-bottom: 10px">
+            ⚡ Urutan Penjemputan — Greedy
+          </h4>
+          <div id="beratGreedy" style="overflow-x: auto"></div>
+        </div>
+        <div>
+          <h4 style="color: #e65100; margin-bottom: 10px">
+            🧠 Urutan Penjemputan — Dynamic Programming
+          </h4>
+          <div id="beratDP" style="overflow-x: auto"></div>
+        </div>
+      </div>
+
+      <!-- LANGKAH-LANGKAH -->
+      <div class="step-section">
+        <h2>🔢 Langkah-langkah Pengambilan Keputusan</h2>
+        <p class="section-note">
+          Setiap langkah perpindahan algoritma beserta jarak dan berat yang
+          sudah terkumpul.
+        </p>
+        <div class="step-panels" style="margin-top: 18px">
+          <div class="step-panel" id="stepGreedy">
+            <h4>⚡ Langkah Greedy</h4>
+          </div>
+          <div class="step-panel dp" id="stepDP">
+            <h4>🧠 Langkah Dynamic Programming</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- PETA -->
+      <div class="map-container">
+        <div class="map-card">
+          <h3>📍 Rute Greedy</h3>
+          <div id="mapGreedy" class="map"></div>
+        </div>
+        <div class="map-card dp">
+          <h3>📍 Rute Dynamic Programming</h3>
+          <div id="mapDP" class="map"></div>
+        </div>
+      </div>
+
+      <!-- MATRIKS JARAK (hanya untuk subset kelurahan yang dipilih) -->
+      <div class="matrix-section">
+        <h2>📊 Matriks Jarak Antar Kelurahan (km)</h2>
+        <div id="matrixContainer" style="overflow-x: auto">
+          <table class="dist-table" id="distTable"></table>
+        </div>
+      </div>
+
+      <!-- CHART -->
+      <div class="chart-box">
+        <canvas id="jarakChart" width="400" height="300"></canvas>
+        <canvas id="waktuChart" width="400" height="300"></canvas>
+      </div>
+
+      <!-- KOMPLEKSITAS -->
+      <div class="step-section">
+        <h2>🔬 Kompleksitas Algoritma</h2>
+        <div class="step-panels">
+          <div class="step-panel">
+            <h4>⚡ Greedy — O(n²)</h4>
+            <p class="section-note">
+              Untuk n=26 kelurahan: hanya ~3.250 operasi. Sangat cepat namun
+              tidak menjamin optimal.
+            </p>
+          </div>
+          <div class="step-panel dp">
+            <h4>🧠 DP Held-Karp — O(n² × 2ⁿ)</h4>
+            <p class="section-note">
+              Hanya dapat dijalankan untuk n ≤ 12 karena kompleksitas
+              eksponensial. Menjamin solusi optimal.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align: center; margin-top: 10px">
+        <a
+          href="index.html"
+          class="btn-banding"
+          style="
+            background: #2e7d32;
+            display: inline-block;
+            width: auto;
+            padding: 12px 32px;
+          "
+          >← Kembali Input Data</a
+        >
+      </p>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
