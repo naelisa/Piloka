@@ -3,186 +3,82 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Optimasi Sampah Terpilah - Tasikmalaya</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>PILOKA - Optimasi Penjemputan Sampah</title>
     <style>
-      .kel-checkbox-group {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 8px;
-        max-height: 300px;
-        overflow-y: auto;
-        border: 1px solid #c8e6c9;
-        border-radius: 16px;
-        padding: 12px;
-        background: white;
-        margin-top: 8px;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-      .kel-checkbox-group label {
+
+      body {
+        background: linear-gradient(135deg, #1b5e20, #0d3b0f);
+        min-height: 100vh;
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
+        justify-content: center;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .landing {
+        text-align: center;
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .logo {
+        font-size: 5rem;
+        font-weight: 800;
+        color: white;
+        letter-spacing: 0.1em;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        margin-bottom: 40px;
+      }
+
+      .logo span {
+        color: #a5d6a7;
+      }
+
+      .btn-mulai {
+        display: inline-block;
+        background: #ff9800;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 14px 48px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        border: none;
         cursor: pointer;
       }
-      .mode-radio {
-        display: flex;
-        gap: 20px;
-        margin: 12px 0;
-        align-items: center;
+
+      .btn-mulai:hover {
+        background: #e65100;
+        transform: scale(1.05);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
       }
-      .mode-radio label {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-weight: normal;
-        margin-top: 0;
-      }
-      .berat-table input {
-        width: 80px;
-        padding: 6px;
-        text-align: center;
+
+      .btn-mulai:active {
+        transform: scale(0.98);
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <!-- Site Header Row -->
-      <div class="site-header">
-        <div class="site-header-titles">
-          <h1>🌿 Optimasi Penjemputan Sampah Terpilah</h1>
-          <h2>📍 Kota Tasikmalaya — Per Kelurahan</h2>
-        </div>
-        <div class="piloka-badge">
-          <div class="piloka-logo">
-            <div class="piloka-dot"></div>
-            <span class="piloka-icon">♻️</span>
-            <div class="piloka-text">
-              <span class="piloka-name">PIL<span>O</span>KA</span>
-              <span class="piloka-tagline">Pilah &amp; Optimasi Logistik Kebersihan Area</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="hero-desc">
-        Masukkan berat sampah tiap kelurahan, pilih titik awal dan akhir truk,
-        lalu bandingkan rute <strong>Greedy</strong> vs
-        <strong>Dynamic Programming</strong>.
-      </p>
-
-      <div class="form-box">
-        <div class="mode-radio">
-          <label
-            ><input type="radio" name="routeMode" value="all" checked /> 🌍
-            Semua Kelurahan (26 titik)</label
-          >
-          <label
-            ><input type="radio" name="routeMode" value="custom" /> 🎯 Pilih
-            kelurahan sendiri</label
-          >
-        </div>
-
-        <div id="kelurahanCustomPanel" style="display: none">
-          <label>📌 Pilih Kelurahan yang Akan Dijemput:</label>
-          <div style="margin: 8px 0">
-            <button type="button" id="selectAllBtn" class="small-btn">
-              ✔️ Pilih Semua
-            </button>
-            <button type="button" id="deselectAllBtn" class="small-btn">
-              ❌ Hapus Semua
-            </button>
-          </div>
-          <div id="kelurahanCheckboxes" class="kel-checkbox-group"></div>
-          <p class="section-note">
-            ✅ Minimal pilih 2 kelurahan (awal dan akhir berbeda).
-          </p>
-        </div>
-
-        <label>🚛 Titik Awal & Akhir Rute Truk:</label>
-        <div class="route-selects">
-          <div>
-            <label style="margin-top: 0; font-size: 0.85rem"
-              >🏠 Titik Awal</label
-            >
-            <select id="daerahAsal"></select>
-          </div>
-          <div>
-            <label style="margin-top: 0; font-size: 0.85rem"
-              >🏁 Titik Akhir</label
-            >
-            <select id="daerahAkhir"></select>
-          </div>
-        </div>
-        <p id="warningAkhir" class="warning-text">
-          ⚠️ Titik akhir tidak boleh sama dengan titik awal.
-        </p>
-
-        <label>🚛 Kapasitas Truk (kg):</label>
-        <input
-          type="number"
-          id="kapasitasTruk"
-          value="100"
-          step="10"
-          min="10"
-        />
-
-        <label style="margin-top: 20px"
-          >⚖️ Berat Sampah Per Kelurahan (kg):</label
-        >
-        <p class="section-note">
-          Masukkan berat organik dan anorganik. Tabel hanya menampilkan
-          kelurahan yang dipilih.
-        </p>
-        <div class="berat-table-wrap">
-          <table class="berat-table" id="beratTable">
-            <thead>
-              <tr>
-                <th>Kelurahan</th>
-                <th>♻️ Organik (kg)</th>
-                <th>🗑️ Anorganik (kg)</th>
-                <th>📦 Total (kg)</th>
-              </tr>
-            </thead>
-            <tbody id="beratTbody"></tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td>🔢 TOTAL</td>
-                <td id="totalOrganik">0</td>
-                <td id="totalAnorganik">0</td>
-                <td id="totalSemua">0</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <div
-          id="statusKapasitas"
-          class="info-status"
-          style="display: none"
-        ></div>
-
-        <button id="simpanBtn">💾 Simpan & Hitung Rute</button>
-        <div id="infoHasil" class="info-panel" style="display: none"></div>
-        <a href="banding.html" class="btn-banding"
-          >🔍 Lihat Perbandingan Rute Terbaik →</a
-        >
-      </div>
-
-      <div class="algo-section">
-        <h2>📚 Apa itu Algoritma yang Digunakan?</h2>
-        <div class="algo-cards">
-          <div class="algo-card">
-            <h3>⚡ Greedy</h3>
-            <p>
-              Memilih tetangga terdekat. Cepat (O(n²)), tidak selalu optimal.
-            </p>
-          </div>
-          <div class="algo-card dp">
-            <h3>🧠 DP (Held-Karp)</h3>
-            <p>Optimal untuk ≤12 titik. Kompleksitas eksponensial.</p>
-          </div>
-        </div>
-      </div>
+    <div class="landing">
+      <div class="logo">PIL<span>O</span>KA</div>
+      <a href="index.html" class="btn-mulai">MULAI</a>
     </div>
-    <script src="script.js"></script>
   </body>
 </html>
